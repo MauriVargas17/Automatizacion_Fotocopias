@@ -1,0 +1,19 @@
+{
+  "name": "fotocopiadora",
+  "version": "1.0.0",
+  "description": "Proyecto de Practica Interna",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon server.js"
+  },
+  "author": "Mauricio Vargas",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongodb": "^5.5.0",
+    "mongoose": "^7.2.0",
+    "morgan": "^1.10.0"
+  }
+}
