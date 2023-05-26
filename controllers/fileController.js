@@ -1,8 +1,10 @@
 const fileMware = require('../middlewares/fileMiddleware');
-const dotenv = require('../config.env');
+const dotenv = require('dotenv');
 
 const MongoClient = require('mongodb').MongoClient;
 const GridFSBucket = require('mongodb').GridFSBucket;
+
+dotenv.config({ path: './config.env' });
 
 const url = process.env.DATABASE.replace(
   '<password>',
@@ -31,7 +33,7 @@ exports.uploadFiles = async (req, res) => {
     console.log(error);
 
     return res.send({
-      message: `Error when trying upload image: ${error}`,
+      message: `Error when trying upload file: ${error}`,
     });
   }
 };
@@ -53,9 +55,11 @@ exports.getListOfFiles = async (req, res) => {
 
     let fileInfos = [];
     await cursor.forEach((doc) => {
+      const docSizeInKB = doc.length / 1024;
       fileInfos.push({
         name: doc.filename,
-        url: baseUrl + doc.filename,
+        size: `${docSizeInKB} KB`,
+        pages: doc.numPages,
       });
     });
 
@@ -83,7 +87,7 @@ exports.downloadByName = async (req, res) => {
     });
 
     downloadStream.on('error', function (err) {
-      return res.status(404).send({ message: 'Cannot download the File!' });
+      return res.status(404).send({ message: 'Cannot download the file!' });
     });
 
     downloadStream.on('end', () => {

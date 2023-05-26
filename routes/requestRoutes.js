@@ -7,4 +7,9 @@ router
   .get(requestController.getAllRequests)
   .post(requestController.postRequest);
 
+router
+  .route('/:id')
+  .get(requestController.getRequest)
+  .delete(requestController.deleteRequest);
+
 module.exports = router;

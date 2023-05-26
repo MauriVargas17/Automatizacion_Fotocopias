@@ -17,11 +17,12 @@ const fileStorageEngine = new GridFsStorage({
       const filename = `${date.getDate()}-${
         date.getMonth() + 1
       }-${date.getFullYear()}--${file.originalname}`;
+
       return filename;
     }
   },
 });
 
 const uploadFiles = multer({ storage: fileStorageEngine }).single('file');
-const uploadFilesMiddleware = util.promisify(uploadFiles);
-module.exports = uploadFilesMiddleware;
+const filesMiddleware = util.promisify(uploadFiles);
+module.exports = filesMiddleware;

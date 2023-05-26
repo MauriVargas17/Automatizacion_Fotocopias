@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const requestSchema = mongoose.Schema({
-  username: {
+  user: {
     type: String,
     required: [true, 'A request needs a user who makes the request'],
   },
@@ -14,13 +14,9 @@ const requestSchema = mongoose.Schema({
   },
   fileName: {
     type: String,
-    required: [true, 'A request needs the name of the file'],
-    trim: true,
+    default: 'NO_FILE_INCLUDED',
   },
-  fileSize: {
-    type: String,
-    required: [true, 'A request needs the size of the file'],
-  },
+  fileSize: String,
   numberOfCopies: {
     type: Number,
     required: [true, 'A request needs the number of copies'],
@@ -45,11 +41,7 @@ const requestSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  isAccepted: {
-    type: Boolean,
-    default: false,
-  },
-  isCompleted: {
+  requestIsCompleted: {
     type: Boolean,
     default: false,
   },
