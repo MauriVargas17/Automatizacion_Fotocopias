@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
+const multer = require('multer');
 const requestRouter = require('./routes/requestRoutes');
+const fileRouter = require('./routes/fileRoutes');
 
 const app = express();
 
@@ -16,5 +18,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/v1/requests', requestRouter);
+app.use('/api/v1/file', fileRouter);
 
 module.exports = app;
