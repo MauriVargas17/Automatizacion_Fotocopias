@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const multer = require('multer');
 const requestRouter = require('./routes/requestRoutes');
 const fileRouter = require('./routes/fileRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/v1/requests', requestRouter);
-app.use('/api/v1/file', fileRouter);
+app.use('/api/v1/files', fileRouter);
+app.use('/api/v1/users', userRouter);
 
 module.exports = app;

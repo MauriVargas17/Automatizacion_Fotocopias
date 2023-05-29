@@ -43,7 +43,7 @@ exports.getListOfFiles = async (req, res) => {
     await mongoClient.connect();
 
     const database = mongoClient.db('');
-    const files = database.collection(process.env.FILESBUCKET + '.files');
+    const files = database.collection(process.env.FILES_BUCKET + '.files');
 
     const cursor = files.find({});
 
@@ -106,7 +106,7 @@ exports.deleteByName = async (req, res) => {
 
     const database = mongoClient.db('');
     const bucket = new GridFSBucket(database, {
-      bucketName: process.env.FILESBUCKET,
+      bucketName: process.env.FILES_BUCKET,
     });
 
     const file = await bucket.find({ filename: req.params.name }).next();

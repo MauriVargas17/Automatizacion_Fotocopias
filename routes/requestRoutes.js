@@ -1,15 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const requestController = require('../controllers/requestController');
+const authController = require('./../controllers/authController');
 
 router
   .route('/')
-  .get(requestController.getAllRequests)
-  .post(requestController.postRequest);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getAllRequests
+  )
+  .post(authController.protect, requestController.postRequest);
 
 router
   .route('/:id')
-  .get(requestController.getRequest)
-  .delete(requestController.deleteRequest);
+  .get(authController.protect, requestController.getRequest)
+  .delete(authController.protect, requestController.deleteRequest);
 
 module.exports = router;
