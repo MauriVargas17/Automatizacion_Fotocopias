@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const requestSchema = mongoose.Schema({
   user: {
@@ -24,10 +25,22 @@ const requestSchema = mongoose.Schema({
   pickUpDate: {
     type: String,
     required: [true, 'A request needs the pick up date'],
+    validate: {
+      validator: function (el) {
+        return el.match(/^[0-9]{2}-[0-9]{2}-[0-9]{4}$/);
+      },
+      message: 'Must provide a valid date',
+    },
   },
   pickUpTime: {
     type: String,
     required: [true, 'A request needs the pick up time'],
+    validate: {
+      validator: function (el) {
+        return el.match(/^[0-9]{2}:[0-9]{2}$/);
+      },
+      message: 'Must provide a valid time',
+    },
   },
   isColoured: {
     type: Boolean,

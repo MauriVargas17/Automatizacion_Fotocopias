@@ -12,6 +12,16 @@ const signToken = (id) => {
   });
 };
 
+const cleanUserForDisplay = catchAsync(async (user) => {
+  if (user.passwordResetExpire < Date.now()) {
+    user.passwordResetExpire = undefined;
+    user.passwordResetToken = undefined;
+    await user.save({ validateBeforeSave: false });
+  }
+
+  user.password = undefined;
+});
+
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
@@ -25,9 +35,14 @@ const createAndSendToken = (user, statusCode, res) => {
 
   res.cookie('jwt', token, cookieOptions);
 
+  cleanUserForDisplay(user);
+
   res.status(statusCode).json({
     status: 'success',
     token,
+    data: {
+      user: user,
+    },
   });
 };
 
@@ -43,17 +58,7 @@ exports.signUp = async (req, res, next) => {
       passwordChangedAt: req.body.passwordChangedAt,
     });
 
-    const token = signToken(newUser._id);
-
-    newUser.password = undefined;
-
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        user: newUser,
-      },
-    });
+    createAndSendToken(newUser, 201, res);
   } catch (error) {
     res.status(500).json({
       status: 'failed',

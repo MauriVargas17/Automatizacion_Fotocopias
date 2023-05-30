@@ -14,7 +14,23 @@ router
 
 router
   .route('/:id')
-  .get(authController.protect, requestController.getRequest)
-  .delete(authController.protect, requestController.deleteRequest);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getRequest
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.deleteRequest
+  );
+
+router
+  .route('/date/:date')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getRequestsByDate
+  );
 
 module.exports = router;
