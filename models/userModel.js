@@ -10,12 +10,12 @@ const userSchema = mongoose.Schema({
     trim: true,
   },
   upbCode: {
-    type: String,
+    type: Number,
     required: [true, 'A user must have a UPB code'],
     unique: true,
     validate: {
       validator: function (el) {
-        return el.length === 5;
+        return el.toString().length === 5;
       },
       message: 'Must provide a valid UPB Code',
     },
@@ -55,6 +55,11 @@ const userSchema = mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpire: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -70,6 +75,11 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

@@ -9,6 +9,24 @@ router.post('/login', authController.logIn);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
+router.patch(
+  '/updatePassword',
+  authController.protect,
+  authController.updatePassword
+);
+
+router.patch(
+  '/updateMyUser',
+  authController.protect,
+  userController.updateMyUser
+);
+
+router.delete(
+  '/deleteMyUser',
+  authController.protect,
+  userController.deleteMyUser
+);
+
 router.route('/').get(userController.getAllUsers);
 
 module.exports = router;

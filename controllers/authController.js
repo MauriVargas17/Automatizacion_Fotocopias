@@ -12,6 +12,25 @@ const signToken = (id) => {
   });
 };
 
+const createAndSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+  });
+};
+
 exports.signUp = async (req, res, next) => {
   try {
     const newUser = await User.create({
@@ -25,6 +44,8 @@ exports.signUp = async (req, res, next) => {
     });
 
     const token = signToken(newUser._id);
+
+    newUser.password = undefined;
 
     res.status(201).json({
       status: 'success',
@@ -55,13 +76,9 @@ exports.logIn = async (req, res, next) => {
       return next(new AppError('Incorrect email or password', 401));
     }
 
-    console.log(user);
+    console.log('Displaying user', user);
 
-    const token = signToken(user._id);
-    res.status(200).json({
-      status: 'success',
-      token,
-    });
+    createAndSendToken(user, 200, res);
   } catch (error) {
     res.send(500).json({
       status: 'failed',
@@ -88,7 +105,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
-  console.log(decodedPayload);
+  console.log('Displaying decoded payload', decodedPayload);
 
   const currentUser = await User.findById(decodedPayload.id);
 
@@ -180,9 +197,19 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   await user.save();
 
-  const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    return next(new AppError('Password entered is not correct', 401));
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  await user.save();
+
+  createAndSendToken(user, 200, res);
 });

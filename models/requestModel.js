@@ -41,6 +41,7 @@ const requestSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  specifications: String,
   requestIsCompleted: {
     type: Boolean,
     default: false,
