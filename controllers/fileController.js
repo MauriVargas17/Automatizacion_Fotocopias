@@ -11,14 +11,11 @@ const url = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-const baseUrl = 'http://localhost:3000/pdfs/';
-
 const mongoClient = new MongoClient(url);
 
 exports.uploadFiles = async (req, res) => {
   try {
     await fileMware(req, res);
-    console.log(req.file);
 
     if (req.file == undefined) {
       return res.send({

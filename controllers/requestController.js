@@ -3,18 +3,20 @@ const QueryHandler = require('../utils/queryHandler');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
-const planMaker = async function (req, lBoundary, uBoundary) {
+const planMaker = async function (req, lBoundary, uBoundary, isCompleted) {
   const date = req.params.date.split('-').reverse().join('');
   console.log('Boundaries', date + lBoundary, date + uBoundary);
   const plan = await Request.aggregate([
     {
       $match: {
+        requestIsCompleted: { $eq: isCompleted },
         date: {
           $gte: date + lBoundary,
           $lte: date + uBoundary,
         },
       },
     },
+
     {
       $group: {
         _id: {
@@ -82,6 +84,30 @@ exports.deleteRequest = async (req, res) => {
     });
   }
 };
+
+exports.deleteAllRequests = catchAsync(async (req, res) => {
+  await Request.deleteMany();
+  res.status(200).json({
+    status: 'success',
+    message: 'All requests deleted successfully',
+  });
+});
+
+exports.completeRequest = catchAsync(async (req, res) => {
+  const request = await Request.findById(req.params.id);
+
+  request.requestIsCompleted = true;
+
+  request.save();
+
+  res.status(200).json({
+    status: 'success',
+    completedAt: res.requestTime,
+    data: {
+      request,
+    },
+  });
+});
 
 exports.getRequest = async (req, res) => {
   try {
@@ -184,7 +210,21 @@ exports.getRequestsStats = catchAsync(async (req, res, next) => {
 });
 
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
-  const plan = await planMaker(req, '01', '31');
+  const plan = await planMaker(req, '01', '31', false);
+
+  res.status(200).json({
+    status: 'success',
+    requestedAt: res.requestTime,
+    data: {
+      timeFrame: 'Month',
+      pointInTime: 'Day',
+      plan,
+    },
+  });
+});
+
+exports.getMonthlyCompleted = catchAsync(async (req, res, next) => {
+  const plan = await planMaker(req, '01', '31', true);
 
   res.status(200).json({
     status: 'success',
@@ -198,7 +238,21 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 });
 
 exports.getYearlyPlan = catchAsync(async (req, res, next) => {
-  const plan = await planMaker(req, '0101', '1231');
+  const plan = await planMaker(req, '0101', '1231', false);
+
+  res.status(200).json({
+    status: 'success',
+    requestedAt: res.requestTime,
+    data: {
+      timeFrame: 'Year',
+      pointInTime: 'Month',
+      plan,
+    },
+  });
+});
+
+exports.getYearlyCompleted = catchAsync(async (req, res, next) => {
+  const plan = await planMaker(req, '0101', '1231', true);
 
   res.status(200).json({
     status: 'success',

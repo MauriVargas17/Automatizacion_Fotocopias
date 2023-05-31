@@ -10,7 +10,12 @@ router
     authController.restrictTo('admin'),
     requestController.getAllRequests
   )
-  .post(authController.protect, requestController.postRequest);
+  .post(authController.protect, requestController.postRequest)
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.deleteAllRequests
+  );
 
 router
   .route('/stats')
@@ -37,6 +42,22 @@ router
   );
 
 router
+  .route('/completed/month/:date')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getMonthlyCompleted
+  );
+
+router
+  .route('/completed/year/:date')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getYearlyCompleted
+  );
+
+router
   .route('/:id')
   .get(
     authController.protect,
@@ -47,6 +68,11 @@ router
     authController.protect,
     authController.restrictTo('admin'),
     requestController.deleteRequest
+  )
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.completeRequest
   );
 
 router
