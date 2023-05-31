@@ -7,7 +7,11 @@ const csvController = require('./../controllers/csvController');
 router
   .route('/')
   .post(authController.protect, fileController.uploadFiles)
-  .get(authController.protect, fileController.getListOfFiles);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    fileController.getListOfFiles
+  );
 
 router
   .route('/reports')
@@ -19,7 +23,15 @@ router
 
 router
   .route('/:name')
-  .get(authController.protect, fileController.downloadByName)
-  .delete(authController.protect, fileController.deleteByName);
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    fileController.downloadByName
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
+    fileController.deleteByName
+  );
 
 module.exports = router;
