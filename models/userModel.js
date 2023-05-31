@@ -30,6 +30,7 @@ const userSchema = mongoose.Schema({
   faculty: {
     type: String,
     required: [true, 'A user must have a faculty'],
+    enum: ['FIA', 'FACED', 'DAAE'],
   },
   role: {
     type: String,

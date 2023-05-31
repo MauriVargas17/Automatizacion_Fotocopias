@@ -12,6 +12,7 @@ const requestSchema = mongoose.Schema({
       true,
       'A request needs the faculty of the user who makes the request',
     ],
+    enum: ['FIA', 'FACED', 'DAAE'],
   },
   fileName: {
     type: String,
@@ -22,14 +23,27 @@ const requestSchema = mongoose.Schema({
     type: Number,
     required: [true, 'A request needs the number of copies'],
   },
+  numberOfPages: {
+    type: Number,
+    required: [true, 'A request needs the number of pages of one document'],
+  },
   pickUpDate: {
     type: String,
     required: [true, 'A request needs the pick up date'],
     validate: {
       validator: function (el) {
-        return el.match(/^[0-9]{2}-[0-9]{2}-[0-9]{4}$/);
+        let currentDate = new Date();
+        currentDate = currentDate.toISOString().split('T')[0];
+        const [year, month, day] = currentDate.toString().split('-');
+        currentDate = year + month + day;
+        pickedDate = el.split('-').reverse().join('');
+
+        return (
+          el.match(/^[0-9]{2}-[0-9]{2}-[0-9]{4}$/) && currentDate <= pickedDate
+        );
       },
-      message: 'Must provide a valid date',
+      message:
+        'pickUpDate format is invalid or the pickUpDate chosen is older than today',
     },
   },
   pickUpTime: {
@@ -41,6 +55,10 @@ const requestSchema = mongoose.Schema({
       },
       message: 'Must provide a valid time',
     },
+  },
+  date: {
+    type: String,
+    select: false,
   },
   isColoured: {
     type: Boolean,
@@ -58,6 +76,11 @@ const requestSchema = mongoose.Schema({
   requestIsCompleted: {
     type: Boolean,
     default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+    // select: false,
   },
 });
 

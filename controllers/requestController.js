@@ -1,8 +1,27 @@
 const Request = require('../models/requestModel');
+const QueryHandler = require('../utils/queryHandler');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.postRequest = async (req, res) => {
   try {
-    const newRequest = await Request.create(req.body);
+    const newRequest = await Request.create({
+      user: req.body.user,
+      faculty: req.body.faculty,
+      fileName: req.body.fileName,
+      fileSize: req.body.fileSize,
+      numberOfCopies: req.body.numberOfCopies,
+      numberOfPages: req.body.numberOfPages,
+      pickUpDate: req.body.pickUpDate,
+      pickUpTime: req.body.pickUpTime,
+      date: req.body.pickUpDate.split('-').reverse().join(''),
+      isColoured: req.body.isColoured,
+      isRinged: req.body.isRinged,
+      isFrontAndBack: req.body.isFrontAndBack,
+      specifications: req.body.specifications,
+    });
+
+    newRequest.date = undefined;
     res.status(201).json({
       status: 'success',
       data: {
@@ -54,18 +73,12 @@ exports.getRequestsByDate = async (req, res) => {
   try {
     console.log(req.params.date);
     const date = req.params.date;
-    //const regex = /\b(0[1-9]|1[0-2])-(\d{4})\b/;
     const regex = `^.*${date}$`;
-
-    // const match = '06-2023'.match(regex0);
-    // console.log(match[0]);
     const query = Request.find({
       pickUpDate: {
-        // $regex: `^${req.params.month}$`,
         $regex: regex,
         $options: 'i',
       },
-      // pickUpDate: req.params.month,
     });
 
     const requests = await query;
@@ -86,36 +99,54 @@ exports.getRequestsByDate = async (req, res) => {
   }
 };
 
-exports.getAllRequests = async (req, res) => {
-  try {
-    console.log(req.query);
-    const queryObj = { ...req.query };
+exports.getAllRequests = catchAsync(async (req, res, next) => {
+  const queryHandler = new QueryHandler(Request.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+  const requests = await queryHandler.queryObject;
 
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach((el) => delete queryObj[el]);
+  res.status(200).json({
+    status: 'success',
+    results: requests.length,
+    requestedAt: res.requestTime,
+    data: {
+      requests,
+    },
+  });
+});
 
-    let queryStr = JSON.stringify(queryObj);
-
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    console.log(JSON.parse(queryStr));
-
-    const query = Request.find(JSON.parse(queryStr));
-
-    const requests = await query;
-
-    res.status(200).json({
-      status: 'success',
-      results: requests.length,
-      requestedAt: res.requestTime,
-      data: {
-        requests,
+exports.getRequestsStats = catchAsync(async (req, res, next) => {
+  const stats = await Request.aggregate([
+    {
+      $match: { numberOfCopies: { $gte: 1 } },
+    },
+    {
+      $group: {
+        _id: '$faculty',
+        totalRequests: { $sum: 1 },
+        totalPaperSheetsUsed: {
+          $sum: { $multiply: ['$numberOfCopies', '$numberOfPages'] },
+        },
+        avgCopiesPerRequest: { $avg: '$numberOfCopies' },
+        avgPagesPerRequest: { $avg: '$numberOfPages' },
+        minPagesInARequest: { $min: '$numberOfPages' },
+        maxPagesInARequest: { $max: '$numberOfPages' },
+        minCopiesInARequest: { $min: '$numberOfCopies' },
+        maxCopiesInARequest: { $max: '$numberOfCopies' },
       },
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 'failed',
-      message: error,
-    });
-  }
-};
+    },
+    {
+      $sort: { totalPaperSheetsUsed: 1 },
+    },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    requestedAt: res.requestTime,
+    data: {
+      stats,
+    },
+  });
+});

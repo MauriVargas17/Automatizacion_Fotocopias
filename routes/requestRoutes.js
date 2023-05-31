@@ -13,6 +13,14 @@ router
   .post(authController.protect, requestController.postRequest);
 
 router
+  .route('/stats')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getRequestsStats
+  );
+
+router
   .route('/:id')
   .get(
     authController.protect,
