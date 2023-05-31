@@ -1,4 +1,4 @@
-# Institutional Photocopies Request API
+# Institutional Photocopies Request API :office:
 
 This API allows you to automate the process of requesting photocopies from your institution. It uses Node.js and MongoDB, and it has a number of features, including:
 
@@ -9,7 +9,7 @@ This API allows you to automate the process of requesting photocopies from your 
 - Admin ability to download reports of completed requests as .csv
 - User ability to reset their password through email
 
-## Getting Started
+## Getting Started :tada:
 
 To get started, you will need to:
 
@@ -20,39 +20,39 @@ To get started, you will need to:
 
 The API will now be running on port 3000. You can test it out by visiting `http://localhost:3000` in your browser.
 
-## Features
+## Features :star:
 
-### Processing, filtering, and getting statistics from all photocopies requests throughout time
+### Processing, filtering, and getting statistics from all photocopies requests throughout time :bar_chart:
 
 The API can process all photocopies requests throughout time. It can also filter requests by date, type, status, and other criteria. Finally, it can generate reports that show statistics about all requests, such as the number of requests made each month, the average number of pages per request, and the most popular types of requests.
 
-### User account creation and safe management of passwords and information
+### User account creation and safe management of passwords and information :busts_in_silhouette:
 
 The API allows users to create accounts and securely manage their passwords and other information. This information is stored in the database and is not accessible to anyone other than the user and the admin.
 
-### User ability to upload PDF files to the database for the admin to retrieve alongside their requests specifications
+### User ability to upload PDF files to the database for the admin to retrieve alongside their requests specifications :open_file_folder:
 
 Users can upload PDF files to the database. The admin can then retrieve these files alongside the users' requests specifications. This allows the admin to easily see what each user is requesting and to process the requests quickly and efficiently.
 
-### Admin ability to manage all requests (getting, deleting, marking as complete, filtering)
+### Admin ability to manage all requests (getting, deleting, marking as complete, filtering) :pencil:
 
 The admin can manage all requests. This includes getting requests, deleting requests, marking requests as complete, and filtering requests by date, type, status, and other criteria.
 
-### Admin ability to download reports of completed requests as .csv
+### Admin ability to download reports of completed requests as .csv :calling:
 
 The admin can download reports of completed requests as .csv files. This allows the admin to easily share the data with other stakeholders, such as the finance department or the IT department.
 
-### User ability to reset their password
+### User ability to reset their password :email:
 
 If a user forgets their password, they can reset it by receiving an email from our mail service to the email they provided to create their account. The email will contain a link that the user can click on to reset their password.
 
-## Documentation
+# Documentation :books:
 
-> Routes
+## Routes :arrow_heading_down:
 
-This documentation includes information about all of the API endpoints, as well as examples of how to use them. Endpoints are GET unless stated otherwise.
+This documentation includes information about all of the API endpoints, as well as examples of how to use them. ==Endpoints are GET unless stated otherwise==.
 
-## Users
+## Users :bust_in_silhouette:
 
 Users are able to do a couple of actions according to their role, either `user` or `admin`. Regular users can access the following routes:
 
@@ -100,7 +100,7 @@ _Needs to be `admin`_
 `/api/v1/users`
 Returns all the users in the data base.
 
-> Requests
+## Requests :bookmark_tabs:
 
 All Requests routes are restricted to users with an `admin` role and therefore need to be logged in to perform any of the following routes:
 
@@ -170,7 +170,7 @@ Include the `date` as: 05-2023 (MM-YYYY). Returns an array of **completed** requ
 `/api/v1/requests/completed/year/:date`
 Include the `date` as: 2023 (YYYY). Returns an array of **completed** requests that correspond to the year in `date`, displaying the month and all the requests made for that specific month.
 
-> Files
+## Files :file_folder:
 
 All Files routes are also restricted to logged in users, but this time one endpoint is open to regular users and the rest only to `admin` users:
 
@@ -209,4 +209,4 @@ The API is licensed under the MIT License.
 
 ## Contact
 
-If you have any questions or feedback, please contact me at [vargasmauricio65@gmail.com].
+If you have any questions or feedback, please contact me at [vargasmauricio65@gmail.com] :shipit:.
