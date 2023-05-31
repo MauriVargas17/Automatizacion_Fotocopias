@@ -21,6 +21,22 @@ router
   );
 
 router
+  .route('/plan/month/:date')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getMonthlyPlan
+  );
+
+router
+  .route('/plan/year/:date')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin'),
+    requestController.getYearlyPlan
+  );
+
+router
   .route('/:id')
   .get(
     authController.protect,

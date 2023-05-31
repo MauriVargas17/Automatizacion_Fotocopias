@@ -3,6 +3,38 @@ const QueryHandler = require('../utils/queryHandler');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+const planMaker = async function (req, lBoundary, uBoundary) {
+  const date = req.params.date.split('-').reverse().join('');
+  console.log('Boundaries', date + lBoundary, date + uBoundary);
+  const plan = await Request.aggregate([
+    {
+      $match: {
+        date: {
+          $gte: date + lBoundary,
+          $lte: date + uBoundary,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          pointInTime: {
+            $substr: ['$date', uBoundary.length === 4 ? 4 : 6, 2],
+          },
+        },
+        totalRequests: { $sum: 1 },
+        totalPaperSheetsUsed: {
+          $sum: { $multiply: ['$numberOfPages', '$numberOfCopies'] },
+        },
+        requesters: { $push: '$user' },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return plan;
+};
+
 exports.postRequest = async (req, res) => {
   try {
     const newRequest = await Request.create({
@@ -147,6 +179,34 @@ exports.getRequestsStats = catchAsync(async (req, res, next) => {
     requestedAt: res.requestTime,
     data: {
       stats,
+    },
+  });
+});
+
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+  const plan = await planMaker(req, '01', '31');
+
+  res.status(200).json({
+    status: 'success',
+    requestedAt: res.requestTime,
+    data: {
+      timeFrame: 'Month',
+      pointInTime: 'Day',
+      plan,
+    },
+  });
+});
+
+exports.getYearlyPlan = catchAsync(async (req, res, next) => {
+  const plan = await planMaker(req, '0101', '1231');
+
+  res.status(200).json({
+    status: 'success',
+    requestedAt: res.requestTime,
+    data: {
+      timeFrame: 'Year',
+      pointInTime: 'Month',
+      plan,
     },
   });
 });
