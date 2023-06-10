@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const fileController = require('../controllers/fileController');
-const authController = require('../controllers/authController');
-const csvController = require('./../controllers/csvController');
+const authController = require('../../controllers/authController');
+const csvController = require('../../controllers/csvController');
 
 router
   .route('/')

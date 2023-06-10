@@ -5,9 +5,9 @@ const cors = require('cors');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
-const requestRouter = require('./routes/requestRoutes');
-const fileRouter = require('./routes/fileRoutes');
-const userRouter = require('./routes/userRoutes');
+const requestRouter = require('./src/routes/requestRoutes');
+const fileRouter = require('./src/routes/fileRoutes');
+const userRouter = require('./src/routes/userRoutes');
 
 const app = express();
 app.use(cors());
