@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon server.js"
+    "start:dev": "nodemon server.js",
+    "deploy": "netlify deploy",
+    "build": "webpack"
   },
   "author": "Mauricio Vargas",
   "license": "ISC",
@@ -29,6 +31,7 @@
     "nodemailer": "^4.7.0",
     "pdfjs-dist": "^3.6.172",
     "validator": "^13.9.0",
+    "webpack": "^5.86.0",
     "xss-clean": "^0.1.1"
   }
 }
