@@ -74,7 +74,7 @@ exports.downloadByName = async (req, res) => {
 
     const database = mongoClient.db('');
     const bucket = new GridFSBucket(database, {
-      bucketName: process.env.FILESBUCKET,
+      bucketName: process.env.FILES_BUCKET,
     });
 
     let downloadStream = bucket.openDownloadStreamByName(req.params.name);
@@ -84,7 +84,9 @@ exports.downloadByName = async (req, res) => {
     });
 
     downloadStream.on('error', function (err) {
-      return res.status(404).send({ message: 'Cannot download the file!' });
+      return res
+        .status(404)
+        .send({ message: `Cannot download the file! ${err}` });
     });
 
     downloadStream.on('end', () => {

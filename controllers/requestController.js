@@ -98,7 +98,7 @@ exports.completeRequest = catchAsync(async (req, res) => {
 
   request.requestIsCompleted = true;
 
-  request.save();
+  request.save({ validateBeforeSave: false });
 
   res.status(200).json({
     status: 'success',

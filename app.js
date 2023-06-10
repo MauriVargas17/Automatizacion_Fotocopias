@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
+const cors = require('cors');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
@@ -9,6 +10,7 @@ const fileRouter = require('./routes/fileRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
+app.use(cors());
 
 //Secure HTTP Headers
 app.use(helmet());

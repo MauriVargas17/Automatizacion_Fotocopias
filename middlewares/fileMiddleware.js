@@ -17,6 +17,7 @@ const fileStorageEngine = new GridFsStorage({
       const filename = `${date.getDate()}-${
         date.getMonth() + 1
       }-${date.getFullYear()}--${file.originalname}`;
+      //const filename = file.originalname;
 
       return filename;
     }
